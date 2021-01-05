@@ -5,6 +5,7 @@ use std::io::{stdin, stdout, Read, Write};
 use std::path::{Path, PathBuf};
 use structopt::{clap::arg_enum, StructOpt};
 use stylua_lib::{format_code, Config, Range};
+use std::borrow::{BorrowMut};
 
 mod output_diff;
 
@@ -21,6 +22,11 @@ struct Opt {
     /// Any files input will not be overwritten.
     #[structopt(short, long)]
     check: bool,
+
+    /// Convert single quoted string to double quoted string,
+    /// default disabled
+    #[structopt(short, long)]
+    double_quote: bool,
 
     // Whether the output should include terminal colour or not
     #[structopt(long, possible_values = &Color::variants(), case_insensitive = true, default_value = "auto")]
@@ -128,7 +134,7 @@ fn format(opt: Opt) -> Result<i32> {
         return Err(format_err!("error: no files provided"));
     }
 
-    let config: Config = match opt.config_path {
+    let mut config: Config = match opt.config_path {
         Some(config_path) => match fs::read_to_string(config_path) {
             Ok(contents) => match toml::from_str(&contents) {
                 Ok(config) => config,
@@ -165,6 +171,11 @@ fn format(opt: Opt) -> Result<i32> {
     } else {
         None
     };
+
+
+    if opt.double_quote {
+        config.borrow_mut().set_force_double_quote(opt.double_quote);
+    }
 
     let mut errors = vec![];
     let mut error_code = 0;

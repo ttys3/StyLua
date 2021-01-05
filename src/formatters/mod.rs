@@ -145,6 +145,11 @@ impl CodeFormatter {
         (self.indent_level - 1) * self.config.indent_width
     }
 
+    /// Returns convert_single_quote config
+    pub fn get_convert_single_quote(&self) -> bool {
+        self.config.force_double_quote
+    }
+
     /// Adds a Position Range of locations where indents should be increased on top of the current indent level.
     /// This is used mainly within tables, where the values may be an anonymous function but the indent level not being
     /// high enough
@@ -235,61 +240,94 @@ impl CodeFormatter {
                 multi_line,
                 quote_type,
             } => {
-                // If we have a brackets string, don't mess with it
-                if let StringLiteralQuoteType::Brackets = quote_type {
-                    TokenType::StringLiteral {
-                        literal: literal.to_owned(),
-                        multi_line: *multi_line,
-                        quote_type: StringLiteralQuoteType::Brackets,
+                match self.get_convert_single_quote() {
+                    // do not touch
+                    false => {
+                        TokenType::StringLiteral {
+                            literal: literal.to_owned(),
+                            multi_line: *multi_line,
+                            quote_type: *quote_type,
+                        }
                     }
-                } else {
-                    // Match all escapes within the the string
-                    // Based off https://github.com/prettier/prettier/blob/181a325c1c07f1a4f3738665b7b28288dfb960bc/src/common/util.js#L439
-                    lazy_static::lazy_static! {
-                        static ref RE: regex::Regex = regex::Regex::new(r#"\\([\S\s])|(["'])"#).unwrap();
-                        static ref UNNECESSARY_ESCAPES: regex::Regex = regex::Regex::new(r#"^[^\n\r"'0-7\\bfnrt-vx\u2028\u2029]$"#).unwrap();
-                    }
-                    let literal = RE
-                        .replace_all(literal, |caps: &regex::Captures| {
-                            let escaped = caps.get(1);
-                            let quote = caps.get(2);
+                    // force single qouted string converted to double qouted
+                    true => {
+                        // If we have a brackets string, don't mess with it
+                        if let StringLiteralQuoteType::Brackets = quote_type {
+                            TokenType::StringLiteral {
+                                literal: literal.to_owned(),
+                                multi_line: *multi_line,
+                                quote_type: StringLiteralQuoteType::Brackets,
+                            }
+                        } else {
+                            lazy_static::lazy_static! {
+                                static ref DOUBLE_QOUTE_STR: regex::Regex = regex::Regex::new(r#"(")"#).unwrap();
+                            }
+                            // If we have double qoute in a single qouted string, don't mess with it
+                            // since convert single qouted string to double qouted, we need esacpe all double quotes
+                            let do_not_mess_double_in_single: bool = *quote_type == StringLiteralQuoteType::Single && DOUBLE_QOUTE_STR.is_match(literal);
 
-                            match quote {
-                                Some(quote) => {
-                                    // We have a quote, so lets see if it matches what we want, and
-                                    let quote_type = match quote.as_str() {
-                                        "'" => StringLiteralQuoteType::Single,
-                                        "\"" => StringLiteralQuoteType::Double,
-                                        _ => panic!("unknown quote type"),
-                                    };
-                                    if let StringLiteralQuoteType::Single = quote_type {
-                                        String::from("'")
-                                    } else {
-                                        // Double quote, make sure to escape it
-                                        String::from("\\\"")
-                                    }
+                            // println!("do_not_mess_double_in_single={} literal={}", do_not_mess_double_in_single, literal);
+
+                            if do_not_mess_double_in_single {
+                                TokenType::StringLiteral {
+                                    literal: literal.to_owned(),
+                                    multi_line: *multi_line,
+                                    quote_type: *quote_type,
                                 }
-                                None => {
-                                    // We have a normal escape
-                                    // Test to see if it is necessary, and if not, then unescape it
-                                    let text = escaped
-                                        .expect(
-                                            "have a match which was neither an escape or a quote",
-                                        )
-                                        .as_str();
-                                    if UNNECESSARY_ESCAPES.is_match(text) {
-                                        text.to_owned()
-                                    } else {
-                                        format!("\\{}", text.to_owned())
-                                    }
+                            } else {
+                                // Match all escapes within the the string
+                                // Based off https://github.com/prettier/prettier/blob/181a325c1c07f1a4f3738665b7b28288dfb960bc/src/common/util.js#L439
+                                lazy_static::lazy_static! {
+                                // \\([\S\s])|(["'])
+                                static ref RE: regex::Regex = regex::Regex::new(r#"\\([\S\s])|(["'])"#).unwrap();
+                                // ^[^\n\r"'0-7\\bfnrt-vx\u2028\u2029]$
+                                static ref UNNECESSARY_ESCAPES: regex::Regex = regex::Regex::new(r#"^[^\n\r"'0-7\\bfnrt-vx\u2028\u2029]$"#).unwrap();
+                            }
+                                let literal = RE
+                                    .replace_all(literal, |caps: &regex::Captures| {
+                                        let escaped = caps.get(1);
+                                        let quote = caps.get(2);
+
+                                        match quote {
+                                            Some(quote) => {
+                                                // We have a quote, so lets see if it matches what we want, and
+                                                let quote_type = match quote.as_str() {
+                                                    "'" => StringLiteralQuoteType::Single,
+                                                    "\"" => StringLiteralQuoteType::Double,
+                                                    _ => panic!("unknown quote type"),
+                                                };
+
+                                                if let StringLiteralQuoteType::Single = quote_type {
+                                                    String::from("'")
+                                                } else {
+                                                    // Double quote, make sure to escape it
+                                                    String::from("\\\"")
+                                                }
+                                            }
+                                            None => {
+                                                // We have a normal escape
+                                                // Test to see if it is necessary, and if not, then unescape it
+                                                let text = escaped
+                                                    .expect(
+                                                        "have a match which was neither an escape or a quote",
+                                                    )
+                                                    .as_str();
+                                                if UNNECESSARY_ESCAPES.is_match(text) {
+                                                    text.to_owned()
+                                                } else {
+                                                    format!("\\{}", text.to_owned())
+                                                }
+                                            }
+                                        }
+                                    })
+                                    .into_owned();
+                                TokenType::StringLiteral {
+                                    literal: Cow::Owned(literal),
+                                    multi_line: None,
+                                    quote_type: StringLiteralQuoteType::Double,
                                 }
                             }
-                        })
-                        .into_owned();
-                    TokenType::StringLiteral {
-                        literal: Cow::Owned(literal),
-                        multi_line: None,
-                        quote_type: StringLiteralQuoteType::Double,
+                        }
                     }
                 }
             }
