@@ -33,12 +33,13 @@ and StyLua will then be used to format your code. It is recommended to also enab
 ### From Crates.io
 If you have [Rust](https://www.rust-lang.org/) installed, you can install StyLua using cargo
 ```
-cargo install stylua
+cargo install --git https://github.com/ttys3/StyLua
 ```
 This will compile StyLua (for Lua 5.1) and install it on your local machine.
+
 If you would like Luau features, pass the `--features luau` argument.
 ```
-cargo install stylua --features luau
+cargo install --git https://github.com/ttys3/StyLua --features luau
 ```
 
 ## Usage
