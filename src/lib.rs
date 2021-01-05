@@ -35,6 +35,13 @@ pub struct Config {
     line_endings: LineEndings,
     indent_type: IndentType,
     indent_width: usize,
+    force_double_quote: bool, // convert single quoted string to double quoted string
+}
+
+impl Config {
+    pub fn set_force_double_quote(&mut self, single_quote: bool) {
+        self.force_double_quote = single_quote
+    }
 }
 
 impl Default for Config {
@@ -43,6 +50,7 @@ impl Default for Config {
             line_endings: LineEndings::Unix,
             indent_type: IndentType::Tabs,
             indent_width: 4,
+            force_double_quote: false,
         }
     }
 }

@@ -110,3 +110,12 @@ Defaults to `4`.
 ```
 indent_width = 2
 ```
+
+### `force_double_quote`
+
+Force convert single quoted string to double quoted string.
+Defaults to `false`.
+
+```
+force_double_quote = true
+```

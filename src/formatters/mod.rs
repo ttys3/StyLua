@@ -82,6 +82,11 @@ impl CodeFormatter {
         (self.indent_level - 1) * self.config.indent_width
     }
 
+    /// Returns convert_single_quote config
+    pub fn get_convert_single_quote(&self) -> bool {
+        self.config.force_double_quote
+    }
+
     /// Adds a Position Range of locations where indents should be increased on top of the current indent level.
     /// This is used mainly within tables, where the values may be an anonymous function but the indent level not being
     /// high enough
@@ -167,29 +172,38 @@ impl CodeFormatter {
                         quote_type: StringLiteralQuoteType::Brackets,
                     }
                 } else {
-                    lazy_static::lazy_static! {
+                    let mut final_quote_type = quote_type.to_owned();
+                    let literal_replaced = match self.get_convert_single_quote() {
+                        true => {
+                            lazy_static::lazy_static! {
                         static ref RE: regex::Regex = regex::Regex::new(r#"\\?(["'])"#).unwrap(); // Match any quote, both escaped or unescaped
-                    }
-                    let literal = RE
-                        .replace_all(literal, |caps: &regex::Captures| {
-                            let quote_type = match &caps[1] {
-                                "'" => StringLiteralQuoteType::Single,
-                                "\"" => StringLiteralQuoteType::Double,
-                                _ => panic!("unknown quote type"),
-                            };
-
-                            if let StringLiteralQuoteType::Single = quote_type {
-                                "'"
-                            } else {
-                                // Double quote, make sure to escape it
-                                "\\\""
                             }
-                        })
-                        .into_owned();
+                            let literal = RE
+                                .replace_all(literal, |caps: &regex::Captures| {
+                                    let quote_type = match &caps[1] {
+                                        "'" => StringLiteralQuoteType::Single,
+                                        "\"" => StringLiteralQuoteType::Double,
+                                        _ => panic!("unknown quote type"),
+                                    };
+
+                                    if let StringLiteralQuoteType::Single = quote_type {
+                                        "'"
+                                    } else {
+                                        // Double quote, make sure to escape it
+                                        "\\\""
+                                    }
+                                })
+                                .into_owned();
+                            final_quote_type = StringLiteralQuoteType::Double;
+                            literal
+                        }
+                        _ => literal.to_string()
+                    };
+
                     TokenType::StringLiteral {
-                        literal: Cow::Owned(literal),
+                        literal: Cow::Owned(literal_replaced.to_string()),
                         multi_line: None,
-                        quote_type: StringLiteralQuoteType::Double,
+                        quote_type: final_quote_type,
                     }
                 }
             }
