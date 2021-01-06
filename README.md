@@ -120,3 +120,14 @@ Defaults to `false`.
 ```
 force_double_quote = true
 ```
+
+## Related Works
+
+LuaFormatter: a C++ based formatter <https://github.com/Koihik/LuaFormatter>
+
+lua-fmt: a Node.js base formatter <https://github.com/trixnz/lua-fmt>
+
+## Style Ref
+
+[LuaRocks Lua Style Guide](https://github.com/luarocks/lua-style-guide)
+
