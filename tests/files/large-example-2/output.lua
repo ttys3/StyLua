@@ -370,10 +370,7 @@ function findplayer(name, speaker)
 				local c = game.Players:GetChildren()
 				for i = 1, #c do
 					if c[i].className == "Player" then
-						if string.find(
-							string.lower(c[i].Name),
-							string.sub(string.lower(name), commalist[ack], commalist[ack + 1] - 1)
-						) == 1 then
+						if string.find(string.lower(c[i].Name), string.sub(string.lower(name), commalist[ack], commalist[ack + 1] - 1)) == 1 then
 							char = c[i]
 							cnum = cnum + 1
 						end
@@ -584,10 +581,7 @@ function oc(msg, speaker)
 					local itnum = 0
 					local c = ls:GetChildren()
 					for i2 = 1, #c do
-						if string.find(
-							string.lower(c[i2].Name),
-							string.sub(string.lower(msg), danumber1 + 1, danumber2 - 1)
-						) == 1 then
+						if string.find(string.lower(c[i2].Name), string.sub(string.lower(msg), danumber1 + 1, danumber2 - 1)) == 1 then
 							it = c[i2]
 							itnum = itnum + 1
 						end
@@ -1469,11 +1463,7 @@ script.Parent.Parent.Humanoid.Health = 0
 		if danumber2 == nil then
 			return
 		end
-		game.Lighting.Ambient = Color3.new(
-			-string.sub(msg, 9, danumber1 - 1),
-			-string.sub(msg, danumber1 + 1, danumber2 - 1),
-			-string.sub(msg, danumber2 + 1)
-		)
+		game.Lighting.Ambient = Color3.new(-string.sub(msg, 9, danumber1 - 1), -string.sub(msg, danumber1 + 1, danumber2 - 1), -string.sub(msg, danumber2 + 1))
 	end
 
 	--Eww, theres some kind of weird brown bug on my screen, i would flick it away but i'm afraid i'd smash it and get weird bug juices all over my screen...
@@ -1507,11 +1497,7 @@ script.Parent.Parent.Humanoid.Health = 0
 			local head = speaker.Character:FindFirstChild("Head")
 			if head ~= nil then
 				local part = Instance.new("Part")
-				part.Size = Vector3.new(
-					string.sub(msg, 6, danumber1 - 1),
-					string.sub(msg, danumber1 + 1, danumber2 - 1),
-					string.sub(msg, danumber2 + 1)
-				)
+				part.Size = Vector3.new(string.sub(msg, 6, danumber1 - 1), string.sub(msg, danumber1 + 1, danumber2 - 1), string.sub(msg, danumber2 + 1))
 				part.Position = head.Position + Vector3.new(0, part.Size.y / 2 + 5, 0)
 				part.Name = "Person299's Admin Command Script V2 Part thingy"
 				part.Parent = game.Workspace

@@ -102,16 +102,10 @@ do
 		}
 
 		for _, runtimeError in ipairs(self:getErrorChain()) do
-			table.insert(
-				errorStrings,
-				table.concat(
-					{
-						runtimeError.trace or runtimeError.error,
-						runtimeError.context,
-					},
-					"\n"
-				)
-			)
+			table.insert(errorStrings, table.concat({
+				runtimeError.trace or runtimeError.error,
+				runtimeError.context,
+			}, "\n"))
 		end
 
 		return table.concat(errorStrings, "\n")
@@ -441,10 +435,7 @@ end
 
 function Promise.fold(list, callback, initialValue)
 	assert(type(list) == "table", "Bad argument #1 to Promise.fold: must be a table")
-	assert(
-		type(callback) == "function",
-		"Bad argument #2 to Promise.fold: must be a function"
-	)
+	assert(type(callback) == "function", "Bad argument #2 to Promise.fold: must be a function")
 
 	local accumulator = Promise.resolve(initialValue)
 	return Promise.each(list, function(resolvedElement, i)
@@ -528,10 +519,7 @@ function Promise.race(promises)
 	assert(type(promises) == "table", string.format(ERROR_NON_LIST, "Promise.race"))
 
 	for i, promise in pairs(promises) do
-		assert(
-			Promise.is(promise),
-			string.format(ERROR_NON_PROMISE_IN_LIST, "Promise.race", tostring(i))
-		)
+		assert(Promise.is(promise), string.format(ERROR_NON_PROMISE_IN_LIST, "Promise.race", tostring(i)))
 	end
 
 	return Promise._new(debug.traceback(nil, 2), function(resolve, reject, onCancel)
@@ -812,11 +800,7 @@ function Promise.prototype:timeout(seconds, rejectionValue)
 			return Promise.reject(rejectionValue == nil and Error.new({
 				kind = Error.Kind.TimedOut,
 				error = "Timed out",
-				context = string.format(
-					"Timeout of %d seconds exceeded.\n:timeout() called at:\n\n%s",
-					seconds,
-					traceback
-				),
+				context = string.format("Timeout of %d seconds exceeded.\n:timeout() called at:\n\n%s", seconds, traceback),
 			}) or rejectionValue)
 		end),
 		self,
@@ -877,14 +861,8 @@ function Promise.prototype:_andThen(traceback, successHandler, failureHandler)
 end
 
 function Promise.prototype:andThen(successHandler, failureHandler)
-	assert(
-		successHandler == nil or type(successHandler) == "function",
-		string.format(ERROR_NON_FUNCTION, "Promise:andThen")
-	)
-	assert(
-		failureHandler == nil or type(failureHandler) == "function",
-		string.format(ERROR_NON_FUNCTION, "Promise:andThen")
-	)
+	assert(successHandler == nil or type(successHandler) == "function", string.format(ERROR_NON_FUNCTION, "Promise:andThen"))
+	assert(failureHandler == nil or type(failureHandler) == "function", string.format(ERROR_NON_FUNCTION, "Promise:andThen"))
 
 	return self:_andThen(debug.traceback(nil, 2), successHandler, failureHandler)
 end
@@ -893,10 +871,7 @@ end
 	Used to catch any errors that may have occurred in the promise.
 ]]
 function Promise.prototype:catch(failureCallback)
-	assert(
-		failureCallback == nil or type(failureCallback) == "function",
-		string.format(ERROR_NON_FUNCTION, "Promise:catch")
-	)
+	assert(failureCallback == nil or type(failureCallback) == "function", string.format(ERROR_NON_FUNCTION, "Promise:catch"))
 	return self:_andThen(debug.traceback(nil, 2), nil, failureCallback)
 end
 
@@ -905,10 +880,7 @@ end
 	value returned from the handler.
 ]]
 function Promise.prototype:tap(tapCallback)
-	assert(
-		type(tapCallback) == "function",
-		string.format(ERROR_NON_FUNCTION, "Promise:tap")
-	)
+	assert(type(tapCallback) == "function", string.format(ERROR_NON_FUNCTION, "Promise:tap"))
 	return self:_andThen(debug.traceback(nil, 2), function(...)
 		local callbackReturn = tapCallback(...)
 
@@ -927,10 +899,7 @@ end
 	Calls a callback on `andThen` with specific arguments.
 ]]
 function Promise.prototype:andThenCall(callback, ...)
-	assert(
-		type(callback) == "function",
-		string.format(ERROR_NON_FUNCTION, "Promise:andThenCall")
-	)
+	assert(type(callback) == "function", string.format(ERROR_NON_FUNCTION, "Promise:andThenCall"))
 	local length, values = pack(...)
 	return self:_andThen(debug.traceback(nil, 2), function()
 		return callback(unpack(values, 1, length))
@@ -1031,10 +1000,7 @@ function Promise.prototype:_finally(traceback, finallyHandler, onlyOk)
 end
 
 function Promise.prototype:finally(finallyHandler)
-	assert(
-		finallyHandler == nil or type(finallyHandler) == "function",
-		string.format(ERROR_NON_FUNCTION, "Promise:finally")
-	)
+	assert(finallyHandler == nil or type(finallyHandler) == "function", string.format(ERROR_NON_FUNCTION, "Promise:finally"))
 	return self:_finally(debug.traceback(nil, 2), finallyHandler)
 end
 
@@ -1042,10 +1008,7 @@ end
 	Calls a callback on `finally` with specific arguments.
 ]]
 function Promise.prototype:finallyCall(callback, ...)
-	assert(
-		type(callback) == "function",
-		string.format(ERROR_NON_FUNCTION, "Promise:finallyCall")
-	)
+	assert(type(callback) == "function", string.format(ERROR_NON_FUNCTION, "Promise:finallyCall"))
 	local length, values = pack(...)
 	return self:_finally(debug.traceback(nil, 2), function()
 		return callback(unpack(values, 1, length))
@@ -1066,10 +1029,7 @@ end
 	Similar to finally, except rejections are propagated through it.
 ]]
 function Promise.prototype:done(finallyHandler)
-	assert(
-		finallyHandler == nil or type(finallyHandler) == "function",
-		string.format(ERROR_NON_FUNCTION, "Promise:done")
-	)
+	assert(finallyHandler == nil or type(finallyHandler) == "function", string.format(ERROR_NON_FUNCTION, "Promise:done"))
 	return self:_finally(debug.traceback(nil, 2), finallyHandler, true)
 end
 
@@ -1077,18 +1037,11 @@ end
 	Calls a callback on `done` with specific arguments.
 ]]
 function Promise.prototype:doneCall(callback, ...)
-	assert(
-		type(callback) == "function",
-		string.format(ERROR_NON_FUNCTION, "Promise:doneCall")
-	)
+	assert(type(callback) == "function", string.format(ERROR_NON_FUNCTION, "Promise:doneCall"))
 	local length, values = pack(...)
-	return self:_finally(
-		debug.traceback(nil, 2),
-		function()
-			return callback(unpack(values, 1, length))
-		end,
-		true
-	)
+	return self:_finally(debug.traceback(nil, 2), function()
+		return callback(unpack(values, 1, length))
+	end, true)
 end
 
 --[[
@@ -1096,13 +1049,9 @@ end
 ]]
 function Promise.prototype:doneReturn(...)
 	local length, values = pack(...)
-	return self:_finally(
-		debug.traceback(nil, 2),
-		function()
-			return unpack(values, 1, length)
-		end,
-		true
-	)
+	return self:_finally(debug.traceback(nil, 2), function()
+		return unpack(values, 1, length)
+	end, true)
 end
 
 --[[
@@ -1192,10 +1141,7 @@ function Promise.prototype:_resolve(...)
 	if Promise.is((...)) then
 		-- Without this warning, arguments sometimes mysteriously disappear
 		if select("#", ...) > 1 then
-			local message = string.format(
-				"When returning a Promise from andThen, extra arguments are " .. "discarded! See:\n\n%s",
-				self._source
-			)
+			local message = string.format("When returning a Promise from andThen, extra arguments are " .. "discarded! See:\n\n%s", self._source)
 			warn(message)
 		end
 
