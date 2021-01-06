@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.1] - 2021-03-01
+
+### Changed
+default indent_type set to `Spaces`
+
+### Feat
+add `force_double_quote` config, disabled by default,
+now single quoted string will not converted to double quoted string by default
+
 ## [0.5.0] - 2021-02-24
 ### Added
 - Added support for removing excess parentheses around expressions.

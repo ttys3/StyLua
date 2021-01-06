@@ -1,0 +1,12 @@
+# The type of line endings to use, supports either `Unix` (LF) or `Windows` (CRLF) options.
+line_endings = "Unix"
+
+# The type of indents to use, supports either `Tabs` or `Spaces`
+indent_type = "Spaces"
+
+# The width of spaces a single indent level should be.
+# This option is ignored if the `indent_type` is set to `Tabs`.
+indent_width = 4
+
+# set this to true to force convert single quoted string to double quoted string.
+force_double_quote = false

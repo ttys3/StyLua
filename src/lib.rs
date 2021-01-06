@@ -13,7 +13,7 @@ pub enum IndentType {
 
 impl Default for IndentType {
     fn default() -> Self {
-        IndentType::Tabs
+        IndentType::Spaces
     }
 }
 
@@ -66,7 +66,7 @@ impl Default for Config {
         Self {
             column_width: 120,
             line_endings: LineEndings::Unix,
-            indent_type: IndentType::Tabs,
+            indent_type: IndentType::Spaces,
             indent_width: 4,
             force_double_quote: false,
         }
