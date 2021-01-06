@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.3] - 2021-01-06
+
+### Changed
+the col limit of expand the function call or table increased from 80 to 120
+
+## [0.2.2] - 2021-01-05
+
+### Feat
+add `force_double_quote` config, disabled by default,
+now single quoted string will not converted to double quoted string by default
+
 ## [0.2.1] - 2021-01-03
 ### Fixed
 - Fixed `until` token in a repeat block not being correctly indented

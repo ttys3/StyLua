@@ -86,7 +86,7 @@ impl CodeFormatter {
                     start_parens.end_position().bytes(),
                     end_parens.start_position().bytes(),
                 );
-                let mut is_multiline = (function_call_range.1 - function_call_range.0) > 80; // TODO: Properly determine this arbitrary number, and see if other factors should come into play
+                let mut is_multiline = (function_call_range.1 - function_call_range.0) > 120; // TODO: Properly determine this arbitrary number, and see if other factors should come into play
                 let mut current_arguments = arguments.iter().peekable();
 
                 // Format all the arguments, so that we can prepare them and check to see whether they need expanding
@@ -129,7 +129,7 @@ impl CodeFormatter {
                                             // We have a collapsed table constructor - add the width, and if it fails,
                                             // we need to expand
                                             width_passed += argument.to_string().len();
-                                            if width_passed > 80 {
+                                            if width_passed > 120 {
                                                 break;
                                             }
                                         }
@@ -142,8 +142,8 @@ impl CodeFormatter {
                                             break;
                                         }
                                         width_passed += argument.to_string().len();
-                                        if width_passed > 80 {
-                                            // We have passed 80 characters without a table or anonymous function
+                                        if width_passed > 120 {
+                                            // We have passed 120 characters without a table or anonymous function
                                             // There is nothing else stopping us from expanding - so we will
                                             break;
                                         }

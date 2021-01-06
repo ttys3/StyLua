@@ -1620,7 +1620,7 @@ end
 local c2 = player[i].Character:GetChildren()
 for i=1,#c2 do
 if c2[i].className == "Part" then
-torso.BF.force = torso.BF.force - Vector3.new(0,c2[i]:getMass() * 80,0)
+torso.BF.force = torso.BF.force - Vector3.new(0,c2[i]:getMass() * 120,0)
 end end end end end end end
 
 if string.sub(msg,1,5) == "grav/" then

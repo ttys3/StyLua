@@ -382,7 +382,7 @@ impl CodeFormatter {
             start_brace.end_position().bytes(),
             end_brace.start_position().bytes(),
         );
-        let mut is_multiline = (braces_range.1 - braces_range.0) + self.get_indent_width() > 80;
+        let mut is_multiline = (braces_range.1 - braces_range.0) + self.get_indent_width() > 120;
 
         // Determine if there was a new line at the end of the start brace
         // If so, then we should always be multiline
