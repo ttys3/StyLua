@@ -1,3 +1,8 @@
+# The approximate line length for printing.
+# This is used as a guide to determine when to wrap lines,
+# but note this is not a hard upper bound. Defaults to 120
+column_width = 120
+
 # The type of line endings to use, supports either `Unix` (LF) or `Windows` (CRLF) options.
 line_endings = "Unix"
 
