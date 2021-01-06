@@ -48,7 +48,7 @@ impl Default for Config {
     fn default() -> Self {
         Self {
             line_endings: LineEndings::Unix,
-            indent_type: IndentType::Tabs,
+            indent_type: IndentType::Spaces,
             indent_width: 4,
             force_double_quote: false,
         }

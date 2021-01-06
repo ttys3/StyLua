@@ -97,7 +97,7 @@ line_endings = "Unix"
 ### `indent_type`
 
 The type of indents to use, supports either `Tabs` or `Spaces`.
-Defaults to `Tabs`.
+Defaults to `Spaces`.
 
 ```
 indent_type = "Tabs"
