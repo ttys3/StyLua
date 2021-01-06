@@ -10,4 +10,4 @@ clean:
 	cargo clean
 
 test:
-	echo 'to do'
+	cargo test
