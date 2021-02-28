@@ -459,6 +459,8 @@ impl CodeFormatter {
         &self,
         token_reference: &TokenReference<'a>,
     ) -> TokenReference<'a> {
+        // Plug 'chr4/nginx.vim': token=[Plug] trailing_trivia=[ ]
+        // println!("token_reference=[{}]", token_reference);
         // Preserve comments in leading/trailing trivia
         let formatted_leading_trivia: Vec<Token<'a>> = self.load_token_trivia(
             token_reference.leading_trivia().collect(),
@@ -476,6 +478,8 @@ impl CodeFormatter {
             &FormatTokenType::Token,
             None,
         );
+        // println!("token=[{}] trailing_trivia=[{}]", token, token_reference.trailing_trivia().last().unwrap());
+
         // TODO: is it possible for leading/trailing trivia to be present here?
         // if let Some(trivia) = leading_trivia {
         //     formatted_leading_trivia.append(trivia);
