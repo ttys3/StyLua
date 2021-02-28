@@ -150,6 +150,11 @@ impl CodeFormatter {
         self.config.force_double_quote
     }
 
+    /// Returns force_parentheses config
+    pub fn get_force_parentheses(&self) -> bool {
+        self.config.force_parentheses
+    }
+
     /// Adds a Position Range of locations where indents should be increased on top of the current indent level.
     /// This is used mainly within tables, where the values may be an anonymous function but the indent level not being
     /// high enough

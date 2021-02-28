@@ -28,6 +28,11 @@ struct Opt {
     #[structopt(short, long)]
     double_quote: bool,
 
+    /// Convert string and table style func args to parentheses style,
+    /// default disabled
+    #[structopt(short, long)]
+    parentheses_func_args: bool,
+
     // Whether the output should include terminal colour or not
     #[structopt(long, possible_values = &Color::variants(), case_insensitive = true, default_value = "auto")]
     color: Color,
@@ -175,6 +180,10 @@ fn format(opt: Opt) -> Result<i32> {
 
     if opt.double_quote {
         config.borrow_mut().set_force_double_quote(opt.double_quote);
+    }
+
+    if opt.parentheses_func_args {
+        config.borrow_mut().set_force_parentheses(opt.parentheses_func_args);
     }
 
     let mut errors = vec![];

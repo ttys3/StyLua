@@ -393,64 +393,72 @@ impl CodeFormatter {
             }
 
             FunctionArgs::String(token_reference) => {
-                let mut arguments = Punctuated::new();
-                let new_expression = self.format_expression(&Expression::Value {
-                    value: Box::new(Value::String(token_reference.to_owned())),
-                    binop: None,
-                    #[cfg(feature = "luau")]
-                    as_assertion: None,
-                });
+                if !self.get_force_parentheses() {
+                    FunctionArgs::String(token_reference.to_owned())
+                } else {
+                    let mut arguments = Punctuated::new();
+                    let new_expression = self.format_expression(&Expression::Value {
+                        value: Box::new(Value::String(token_reference.to_owned())),
+                        binop: None,
+                        #[cfg(feature = "luau")]
+                        as_assertion: None,
+                    });
 
-                // Remove any trailing comments from the expression, and move them into a buffer
-                let (new_expression, comments_buffer) =
-                    trivia_util::get_expression_trailing_comments(&new_expression);
+                    // Remove any trailing comments from the expression, and move them into a buffer
+                    let (new_expression, comments_buffer) =
+                        trivia_util::get_expression_trailing_comments(&new_expression);
 
-                // Create parentheses, and add the trailing comments to the end of the parentheses
-                let parentheses = trivia_formatter::contained_span_add_trivia(
-                    ContainedSpan::new(
-                        Cow::Owned(TokenReference::symbol("(").unwrap()),
-                        Cow::Owned(TokenReference::symbol(")").unwrap()),
-                    ),
-                    FormatTriviaType::NoChange,
-                    FormatTriviaType::Append(comments_buffer),
-                );
+                    // Create parentheses, and add the trailing comments to the end of the parentheses
+                    let parentheses = trivia_formatter::contained_span_add_trivia(
+                        ContainedSpan::new(
+                            Cow::Owned(TokenReference::symbol("(").unwrap()),
+                            Cow::Owned(TokenReference::symbol(")").unwrap()),
+                        ),
+                        FormatTriviaType::NoChange,
+                        FormatTriviaType::Append(comments_buffer),
+                    );
 
-                arguments.push(Pair::new(new_expression, None)); // Only single argument, so no trailing comma
+                    arguments.push(Pair::new(new_expression, None)); // Only single argument, so no trailing comma
 
-                FunctionArgs::Parentheses {
-                    parentheses,
-                    arguments,
+                    FunctionArgs::Parentheses {
+                        parentheses,
+                        arguments,
+                    }
                 }
             }
 
             FunctionArgs::TableConstructor(table_constructor) => {
-                let mut arguments = Punctuated::new();
-                let new_expression = self.format_expression(&Expression::Value {
-                    value: Box::new(Value::TableConstructor(table_constructor.to_owned())),
-                    binop: None,
-                    #[cfg(feature = "luau")]
-                    as_assertion: None,
-                });
+                if !self.get_force_parentheses() {
+                    FunctionArgs::TableConstructor(table_constructor.to_owned())
+                } else {
+                    let mut arguments = Punctuated::new();
+                    let new_expression = self.format_expression(&Expression::Value {
+                        value: Box::new(Value::TableConstructor(table_constructor.to_owned())),
+                        binop: None,
+                        #[cfg(feature = "luau")]
+                        as_assertion: None,
+                    });
 
-                // Remove any trailing comments from the expression, and move them into a buffer
-                let (new_expression, comments_buffer) =
-                    trivia_util::get_expression_trailing_comments(&new_expression);
+                    // Remove any trailing comments from the expression, and move them into a buffer
+                    let (new_expression, comments_buffer) =
+                        trivia_util::get_expression_trailing_comments(&new_expression);
 
-                // Create parentheses, and add the trailing comments to the end of the parentheses
-                let parentheses = trivia_formatter::contained_span_add_trivia(
-                    ContainedSpan::new(
-                        Cow::Owned(TokenReference::symbol("(").unwrap()),
-                        Cow::Owned(TokenReference::symbol(")").unwrap()),
-                    ),
-                    FormatTriviaType::NoChange,
-                    FormatTriviaType::Append(comments_buffer),
-                );
+                    // Create parentheses, and add the trailing comments to the end of the parentheses
+                    let parentheses = trivia_formatter::contained_span_add_trivia(
+                        ContainedSpan::new(
+                            Cow::Owned(TokenReference::symbol("(").unwrap()),
+                            Cow::Owned(TokenReference::symbol(")").unwrap()),
+                        ),
+                        FormatTriviaType::NoChange,
+                        FormatTriviaType::Append(comments_buffer),
+                    );
 
-                arguments.push(Pair::new(new_expression, None)); // Only single argument, so no trailing comma
+                    arguments.push(Pair::new(new_expression, None)); // Only single argument, so no trailing comma
 
-                FunctionArgs::Parentheses {
-                    parentheses,
-                    arguments,
+                    FunctionArgs::Parentheses {
+                        parentheses,
+                        arguments,
+                    }
                 }
             }
         }

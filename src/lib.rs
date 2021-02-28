@@ -53,11 +53,16 @@ pub struct Config {
     indent_type: IndentType,
     indent_width: usize,
     force_double_quote: bool, // convert single quoted string to double quoted string
+    force_parentheses: bool, // func args force use parentheses style
 }
 
 impl Config {
     pub fn set_force_double_quote(&mut self, single_quote: bool) {
         self.force_double_quote = single_quote
+    }
+
+    pub fn set_force_parentheses(&mut self, force_parentheses: bool) {
+        self.force_parentheses = force_parentheses
     }
 }
 
@@ -69,6 +74,7 @@ impl Default for Config {
             indent_type: IndentType::Spaces,
             indent_width: 4,
             force_double_quote: false,
+            force_parentheses: false,
         }
     }
 }
